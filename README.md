@@ -29,6 +29,7 @@ Bài tập này sử dụng Docker Compose để cài đặt và quản lý các
 5. Cài thêm tool cơ bản: `sudo apt install curl wget -y`
 6. Kiểm tra Ubuntu: `lsb_release -a`
 <img width="1956" height="217" alt="Screenshot 2025-11-04 134608" src="https://github.com/user-attachments/assets/56573f11-27f0-4029-9d6d-af970e5e3b43" />
+
 #### Bước 2: Cài đặt Docker & Docker Compose
 1. Trong Ubuntu, chạy lệnh:
 ```
@@ -42,3 +43,95 @@ sudo sh get-docker.sh
 <img width="2338" height="829" alt="Screenshot 2025-11-04 170303" src="https://github.com/user-attachments/assets/3a1e037f-fdfd-4793-86ad-8f89aacdb558" />
 
 Nếu thấy "Hello from Docker!" là thành công.
+
+5. Thêm repo docker:
+```sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose  ```
+
+<img width="2320" height="306" alt="Screenshot 2025-11-04 170422" src="https://github.com/user-attachments/assets/05fc7b05-7c4a-42a2-bbfa-336d7149d984" />
+
+6. Thay đổi quyền thực thi cho file: `sudo chmod +x /usr/local/bin/docker-compose`
+7. Kiểm tra Docker: `docker compose version`
+#### Bước 3: Cấu hình Docker Compose
+1. Tạo file `docker-compose.yml`:
+```
+version: '3.9'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: shop
+      MYSQL_USER: hieu
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: hieu
+      PMA_PASSWORD: 1234
+    ports:
+      - "8080:80"
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: always
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered_data:/data
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: always
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    depends_on:
+      - influxdb
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - nodered
+      - grafana
+
+volumes:
+  mariadb_data:
+  nodered_data:
+  influxdb_data:
+  grafana_data:
+```
+2. Chạy lệnh `docker compose up -d`
+<img width="2333" height="1042" alt="Screenshot 2025-11-04 174150" src="https://github.com/user-attachments/assets/34f64f04-46f0-42c8-a7c9-ba778adf26cd" />
