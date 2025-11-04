@@ -52,7 +52,12 @@ Nếu thấy "Hello from Docker!" là thành công.
 6. Thay đổi quyền thực thi cho file: `sudo chmod +x /usr/local/bin/docker-compose`
 7. Kiểm tra Docker: `docker compose version`
 #### Bước 3: Cấu hình Docker Compose
-1. Tạo file `docker-compose.yml`:
+1. Tạo thư mục và chuyển đến nó
+```
+mkdir webapplinux
+cd webapplinux
+```
+2. Tạo file `nano docker-compose.yml`:
 ```
 version: '3.9'
 
@@ -133,5 +138,5 @@ volumes:
   influxdb_data:
   grafana_data:
 ```
-2. Chạy lệnh `docker compose up -d`
+3. Chạy lệnh `docker compose up -d`
 <img width="2333" height="1042" alt="Screenshot 2025-11-04 174150" src="https://github.com/user-attachments/assets/34f64f04-46f0-42c8-a7c9-ba778adf26cd" />
