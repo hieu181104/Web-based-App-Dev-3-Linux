@@ -17,39 +17,28 @@ Bài tập này sử dụng Docker Compose để cài đặt và quản lý các
 - nginx (80,443) : web server
 
 ### 2. CÀI ĐẶT MÔI TRƯỜNG LINUX
-Bài tập này em sử dụng phần mềm VMware để cài Ubuntu.
-#### Bước 1: Tải xuống file .iso của Ubuntu từ trang web: `https://ubuntu.com/`
-<img width="1402" height="61" alt="image" src="https://github.com/user-attachments/assets/d7ee4d40-4abc-45ae-86de-fcdaff6b62de" />
+#### Bước 1: Kích hoạt WSL và cài đặt Ubuntu
+1. Mở PowerShell (Run as Administrator) chạy: `wsl --install -d Ubuntu`
+<img width="1832" height="1023" alt="Screenshot 2025-11-04 132000" src="https://github.com/user-attachments/assets/d20f4092-af75-4b4f-b82d-792b321bc952" />
 
-#### Bước 2: Cài đặt Ubuntu trên máy ảo VMware
-Tạo một máy ảo mới, chọn đường dẫn đặt máy ảo:
+2. Sau khi cài xong khởi động lại máy 
+3. Mở ứng dụng Ubuntu, thiết lập username và password:
+<img width="2338" height="1211" alt="Screenshot 2025-11-04 132657" src="https://github.com/user-attachments/assets/c1f8959a-5c0b-45e6-b974-22c5ef0d62de" />
 
-<img width="2306" height="1279" alt="Screenshot 2025-11-04 145802" src="https://github.com/user-attachments/assets/9a57d54a-99ae-4b19-8ae7-61bfdf827644" />
+4. Cập nhật hệ thống : `sudo apt update && sudo apt upgrade -y`
+5. Cài thêm tool cơ bản: `sudo apt install curl wget -y`
+6. Kiểm tra Ubuntu: `lsb_release -a`
+<img width="1956" height="217" alt="Screenshot 2025-11-04 134608" src="https://github.com/user-attachments/assets/56573f11-27f0-4029-9d6d-af970e5e3b43" />
+#### Bước 2: Cài đặt Docker & Docker Compose
+1. Trong Ubuntu, chạy lệnh:
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+2. Thêm user vào group để chạy docker không cần sudo :`sudo usermod -aG docker $USER`
+3. Áp dụng thay đổi:  `sudo reboot`
+4. Test thử:
+`docker run hello-world`
+<img width="2338" height="829" alt="Screenshot 2025-11-04 170303" src="https://github.com/user-attachments/assets/3a1e037f-fdfd-4793-86ad-8f89aacdb558" />
 
-Thiết lập các thông số cho máy ảo, rồi chọn Finish:
-
-<img width="2303" height="1291" alt="Screenshot 2025-11-04 145857" src="https://github.com/user-attachments/assets/f6c0f784-f374-44dc-b2a5-fd76f69fcef4" />
-
-<img width="2303" height="1286" alt="Screenshot 2025-11-04 145912" src="https://github.com/user-attachments/assets/a5696268-0412-451a-976e-eda4fe172d93" />
-
-Chọn Edit máy ảo và gán đường dẫn file iso vào -> Bấm OK -> Chạy máy ảo:
-
-<img width="1485" height="1423" alt="Screenshot 2025-11-04 145955" src="https://github.com/user-attachments/assets/a655b795-cc9e-491f-8bad-91786c26fa90" />
-
-Cài đặt và cấu hình Ubuntu:
-
-Chọn ngôn ngữ English:
-
-<img width="1291" height="805" alt="Screenshot 2025-11-04 150201" src="https://github.com/user-attachments/assets/8ab9f3b4-50da-4b04-8758-45013830ab5c" />
-
-Thiết lập tài khoản và mật khẩu:
-
-<img width="1278" height="813" alt="Screenshot 2025-11-04 150338" src="https://github.com/user-attachments/assets/2c35638c-d76d-4ed0-be84-e001c4ef4ceb" />
-
-Thêm địa chỉ, vị trí:
-
-<img width="1284" height="799" alt="Screenshot 2025-11-04 150433" src="https://github.com/user-attachments/assets/bdd7f84c-1f39-45d9-8c3e-d518b2a20eb3" />
-
-Kiểm tra thông tin và tiến hành cài đặt Ubuntu -> Install:
-<img width="1281" height="809" alt="Screenshot 2025-11-04 150632" src="https://github.com/user-attachments/assets/4ede94f8-fede-47f2-9710-c984eb0cc61e" />
-
+Nếu thấy "Hello from Docker!" là thành công.
