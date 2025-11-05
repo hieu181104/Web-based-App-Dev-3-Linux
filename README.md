@@ -101,9 +101,9 @@ services:
       - TZ=Asia/Ho_Chi_Minh
     ports:
       - "1880:1880"
+    user: "1000:1000"
     volumes:
       - ./node-red/data:/data
-    user: "1000:1000"
     depends_on:
       - mariadb
       - influxdb
@@ -143,6 +143,7 @@ services:
     restart: always
     environment:
       - GF_SERVER_HTTP_PORT=3000
+      - GF_SERVER_ROOT_URL=http://nguyentrunghieu.com/grafana/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
