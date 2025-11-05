@@ -59,7 +59,7 @@ cd webapplinux
 ```
 2. Tạo file `nano docker-compose.yml`:
 ```
-version: '3.9'
+version: '3.8'
 
 networks:
   ecommerce-network:
@@ -140,8 +140,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./frontend:/usr/share/nginx/html
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - nodered
       - grafana
