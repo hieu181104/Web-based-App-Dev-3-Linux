@@ -283,3 +283,6 @@ server {
     error_page 404 /index.html;
 }
 ```
+4. `Ctrl+O` -> `Enter` -> `Ctrl +X` để lưu và thoát.
+5. Chạy lệnh `docker compose down` -> `docker compose up -d` để cập nhật lại.
+
