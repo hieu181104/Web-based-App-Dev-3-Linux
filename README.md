@@ -61,13 +61,9 @@ cd webapplinux
 ```
 version: '3.8'
 
-networks:
-  ecommerce-network:
-    driver: bridge
-
 services:
   mariadb:
-    image: mariadb:latest
+    image: mariadb:10.11
     container_name: mariadb
     restart: always
     environment:
@@ -75,25 +71,25 @@ services:
       MYSQL_DATABASE: shop
       MYSQL_USER: hieu
       MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
     volumes:
-      - mariadb_data:/var/lib/mysql
-    expose:
-      - "3306"
+      - ./mariadb/data:/var/lib/mysql
     networks:
       - ecommerce-network
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
+    image: phpmyadmin:latest
     container_name: phpmyadmin
     restart: always
-    depends_on:
-      - mariadb
     environment:
       PMA_HOST: mariadb
-      PMA_USER: hieu
-      PMA_PASSWORD: 1234
-    expose:
-      - "80"
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb
     networks:
       - ecommerce-network
 
@@ -101,21 +97,43 @@ services:
     image: nodered/node-red:latest
     container_name: nodered
     restart: always
-    expose:
-      - "1880"
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    ports:
+      - "1880:1880"
     volumes:
-      - nodered_data:/data
+      - ./node-red/data:/data
+    user: "1000:1000"
+    depends_on:
+      - mariadb
+      - influxdb
     networks:
       - ecommerce-network
+    command: >
+      sh -c "
+      npm install -g node-red-node-mysql &&
+      node-red
+      --httpNodeRoot=/api
+      --httpAdminRoot=/nodered
+      --functionGlobalContext.mysql=require('mysql').createPool({host:'mariadb',user:'hieu',password:'1234',database:'shop',port:3306,charset:'utf8mb4',connectionLimit:10})
+      --functionGlobalContext.crypto=require('crypto')
+      "
 
   influxdb:
-    image: influxdb:latest
+    image: influxdb:2.7
     container_name: influxdb
     restart: always
-    expose:
-      - "8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=ecommerce
+      - DOCKER_INFLUXDB_INIT_BUCKET=statistics
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+    ports:
+      - "8086:8086"
     volumes:
-      - influxdb_data:/var/lib/influxdb
+      - ./influxdb/data:/var/lib/influxdb2
     networks:
       - ecommerce-network
 
@@ -123,12 +141,18 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     restart: always
+    environment:
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_SERVER_ROOT_URL=http://nguyentrunhieu.com/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/data:/var/lib/grafana
     depends_on:
       - influxdb
-    expose:
-      - "3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
     networks:
       - ecommerce-network
 
@@ -141,19 +165,17 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./web:/usr/share/nginx/html:ro
     depends_on:
       - nodered
       - grafana
-      - phpmyadmin
     networks:
       - ecommerce-network
 
-volumes:
-  mariadb_data:
-  nodered_data:
-  influxdb_data:
-  grafana_data:
+networks:
+  ecommerce-network:
+    driver: bridge
 ```
 3. Chạy lệnh `docker compose up -d`
 <img width="2333" height="1042" alt="Screenshot 2025-11-04 174150" src="https://github.com/user-attachments/assets/34f64f04-46f0-42c8-a7c9-ba778adf26cd" />
