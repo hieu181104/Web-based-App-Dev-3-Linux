@@ -200,37 +200,86 @@ webapplinux/
 ```
 server {
     listen 80;
-    server_name nguyentrunghieu.com;
+    server_name nguyentrunghieu.com www.nguyentrunghieu.com;
 
-    # Trang web chính (frontend)
-    root /usr/share/nginx/html;
-    index index.html;
-
-    # Gửi các yêu cầu JS/HTML đến frontend (SPA)
     location / {
+        root /usr/share/nginx/html;
+        index index.html;
         try_files $uri $uri/ /index.html;
+
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
     }
 
-    # Proxy đến Node-RED (qua cổng 1880)
-    location /nodered/ {
+    # === API Backend (Node-RED) ===
+    location /api/ {
+        proxy_pass http://nodered:1880/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # === API User Orders (Node-RED) ===
+    location /user/ {
+        proxy_pass http://nodered:1880/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # === Node-RED UI (Subpath) ===
+    location ^~ /nodered/ {
         proxy_pass http://nodered:1880/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
+        proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Fix tài nguyên tĩnh (CSS/JS) cho subpath
+        sub_filter_once off;
+        sub_filter 'href="/'  'href="/nodered/';
+        sub_filter 'src="/'   'src="/nodered/';
+        sub_filter 'action="/' 'action="/nodered/';
+        sub_filter_types text/css text/javascript text/xml application/javascript;
+        proxy_set_header Accept-Encoding "";
     }
 
-    # Proxy đến Grafana (qua cổng 3000)
+    # === Grafana (Subpath) ===
     location /grafana/ {
         proxy_pass http://grafana:3000/;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto http;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # Fix redirects từ Grafana
+        proxy_redirect http://grafana:3000/ /grafana/;
+        proxy_redirect / /grafana/;
+        
+        # thay the trong html
+        sub_filter_once off;
+        sub_filter_types text/html;
+        sub_filter 'href="/' 'href="/grafana/';
+        sub_filter 'src="/' 'src="/grafana/';
+        sub_filter 'href="public/' 'href="/grafana/public/';
+        sub_filter 'src="public/' 'src="/grafana/public/';
+        
+        proxy_set_header Accept-Encoding "";
     }
-    # Xử lý lỗi
+    # === 404 Fallback cho SPA ===
     error_page 404 /index.html;
-  }
+}
 ```
