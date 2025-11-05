@@ -285,3 +285,6 @@ server {
 4. `Ctrl+O` -> `Enter` -> `Ctrl +X` để lưu và thoát.
 5. Chạy lệnh `docker compose down` -> `docker compose up -d` để cập nhật lại.
 
+Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
+<img width="3070" height="1743" alt="image" src="https://github.com/user-attachments/assets/b0968e2f-69a1-4b88-a584-fe1f91ad956f" />
+### 4. TẠO FRONTEND & BACKEND
