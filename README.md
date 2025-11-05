@@ -61,6 +61,10 @@ cd webapplinux
 ```
 version: '3.9'
 
+networks:
+  ecommerce-network:
+    driver: bridge
+
 services:
   mariadb:
     image: mariadb:latest
@@ -73,8 +77,10 @@ services:
       MYSQL_PASSWORD: 1234
     volumes:
       - mariadb_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
+    networks:
+      - ecommerce-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -86,26 +92,32 @@ services:
       PMA_HOST: mariadb
       PMA_USER: hieu
       PMA_PASSWORD: 1234
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
+    networks:
+      - ecommerce-network
 
   nodered:
     image: nodered/node-red:latest
     container_name: nodered
     restart: always
-    ports:
-      - "1880:1880"
+    expose:
+      - "1880"
     volumes:
       - nodered_data:/data
+    networks:
+      - ecommerce-network
 
   influxdb:
     image: influxdb:latest
     container_name: influxdb
     restart: always
-    ports:
-      - "8086:8086"
+    expose:
+      - "8086"
     volumes:
       - influxdb_data:/var/lib/influxdb
+    networks:
+      - ecommerce-network
 
   grafana:
     image: grafana/grafana:latest
@@ -113,10 +125,12 @@ services:
     restart: always
     depends_on:
       - influxdb
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     volumes:
       - grafana_data:/var/lib/grafana
+    networks:
+      - ecommerce-network
 
   nginx:
     image: nginx:latest
@@ -131,12 +145,16 @@ services:
     depends_on:
       - nodered
       - grafana
+      - phpmyadmin
+    networks:
+      - ecommerce-network
 
 volumes:
   mariadb_data:
   nodered_data:
   influxdb_data:
   grafana_data:
+
 ```
 3. Chạy lệnh `docker compose up -d`
 <img width="2333" height="1042" alt="Screenshot 2025-11-04 174150" src="https://github.com/user-attachments/assets/34f64f04-46f0-42c8-a7c9-ba778adf26cd" />
@@ -146,3 +164,52 @@ Sau khi mọi thứ đã ổn, sẽ thấy các container chạy:
 <img width="3062" height="1738" alt="image" src="https://github.com/user-attachments/assets/91e4ff3a-cd84-4459-9d64-408a72de59c1" />
 <img width="3066" height="1736" alt="image" src="https://github.com/user-attachments/assets/007e7750-ea18-4c90-9613-843aa7801cdc" />
 <img width="3070" height="1745" alt="image" src="https://github.com/user-attachments/assets/259b7743-5a00-43de-b7ac-05bad8fcb72d" />
+
+#### Bước 4: Cấu hình Nginx
+1. Cấu trúc thư mục
+```
+webapplinux/
+├── docker-compose.yml
+└── nginx/
+    └── conf.d/
+        └── default.conf   ← file cấu hình nginx sẽ tạo ở đây
+```
+2. Chạy lệnh: `nano ~/webapplinux/nginx/conf.d/default.conf` trong Ubuntu
+3. Nội dung file default.conf:
+```
+server {
+    listen 80;
+    server_name nguyentrunghieu.com;
+
+    # Trang web chính (frontend)
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Gửi các yêu cầu JS/HTML đến frontend (SPA)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy đến Node-RED (qua cổng 1880)
+    location /nodered/ {
+        proxy_pass http://nodered:1880/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Proxy đến Grafana (qua cổng 3000)
+    location /grafana/ {
+        proxy_pass http://grafana:3000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+    # Xử lý lỗi
+    error_page 404 /index.html;
+  }
+```
