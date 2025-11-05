@@ -143,7 +143,7 @@ services:
     restart: always
     environment:
       - GF_SERVER_HTTP_PORT=3000
-      - GF_SERVER_ROOT_URL=http://nguyentrunhieu.com/grafana
+      - GF_SERVER_ROOT_URL=http://nguyentrunghieu.com/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
