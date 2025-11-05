@@ -154,7 +154,6 @@ volumes:
   nodered_data:
   influxdb_data:
   grafana_data:
-
 ```
 3. Chạy lệnh `docker compose up -d`
 <img width="2333" height="1042" alt="Screenshot 2025-11-04 174150" src="https://github.com/user-attachments/assets/34f64f04-46f0-42c8-a7c9-ba778adf26cd" />
@@ -175,7 +174,7 @@ webapplinux/
         └── default.conf   ← file cấu hình nginx sẽ tạo ở đây
 ```
 2. Chạy lệnh: `nano ~/webapplinux/nginx/conf.d/default.conf` trong Ubuntu
-3. Nội dung file default.conf:
+3. Nội dung file `default.conf`:
 ```
 server {
     listen 80;
