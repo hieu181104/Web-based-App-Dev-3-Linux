@@ -186,7 +186,7 @@ Sau khi mọi thứ đã ổn, sẽ thấy các container chạy:
 <img width="3066" height="1736" alt="image" src="https://github.com/user-attachments/assets/007e7750-ea18-4c90-9613-843aa7801cdc" />
 <img width="3070" height="1745" alt="image" src="https://github.com/user-attachments/assets/259b7743-5a00-43de-b7ac-05bad8fcb72d" />
 
-#### Bước 4: Cấu hình Nginx
+### 3. CẤU HÌNH NGINX
 1. Cấu trúc thư mục
 ```
 webapplinux/
