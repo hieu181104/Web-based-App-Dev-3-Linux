@@ -285,4 +285,35 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 
 <img width="3070" height="933" alt="image" src="https://github.com/user-attachments/assets/9652fa30-eb9c-4d10-b63c-cd21323aa5cc" />
 
-2. 
+2. Tạo api backend qua NodeRed
+- liệt kê các nhóm sản phẩm: `http://nguyentrunghieu.com/api/categories`
+
+<img width="1458" height="263" alt="image" src="https://github.com/user-attachments/assets/4e445ca1-ba02-4f8d-9fad-b30a20fe64c9" />
+
+- lấy danh sách sản phẩm lọc theo nhóm: `http://nguyentrunghieu.com/api/products?category_id=1`
+
+<img width="1464" height="142" alt="image" src="https://github.com/user-attachments/assets/0efd783a-d023-4bfc-9e0a-cdad4d237076" />
+<img width="1293" height="1081" alt="image" src="https://github.com/user-attachments/assets/1a212cd3-5f98-4eb5-a698-fb0abb6803bd" />
+
+- tìm kiếm sản phẩm : `http://nguyentrunghieu.com/api/search?q=iphone`
+- 
+<img width="1392" height="169" alt="image" src="https://github.com/user-attachments/assets/253d59cb-e982-411d-a629-7ecf919ad89d" />
+<img width="1264" height="480" alt="image" src="https://github.com/user-attachments/assets/65afa3b6-d3cf-4cc3-8d44-8128f271a2a4" />
+
+- login + lưu session
+ 
+<img width="1991" height="212" alt="image" src="https://github.com/user-attachments/assets/610ba30e-1fb7-48d9-b6f6-68abec383474" />
+
+- liệt kê các sản phẩm bán chạy:`http://nguyentrunghieu.com/api/top-products`
+
+<img width="1519" height="187" alt="image" src="https://github.com/user-attachments/assets/2d30afdb-2fc1-4795-b339-01c6a565a80c" />
+
+<img width="1142" height="1648" alt="image" src="https://github.com/user-attachments/assets/5b34673a-61d8-4025-aef1-12a30ceb9237" />
+
+- quản lý giỏ hàng
+
+<img width="1700" height="506" alt="image" src="https://github.com/user-attachments/assets/ca49ab48-6b45-4f07-be1f-d3ca0cb43f7a" />
+
+- đặt hàng
+
+
