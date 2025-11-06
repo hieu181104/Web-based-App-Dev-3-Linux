@@ -261,23 +261,10 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto http;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         
-        # Fix redirects từ Grafana
-        proxy_redirect http://grafana:3000/ /grafana/;
-        proxy_redirect / /grafana/;
-        
-        # thay the trong html
-        sub_filter_once off;
-        sub_filter_types text/html;
-        sub_filter 'href="/' 'href="/grafana/';
-        sub_filter 'src="/' 'src="/grafana/';
-        sub_filter 'href="public/' 'href="/grafana/public/';
-        sub_filter 'src="public/' 'src="/grafana/public/';
-        
-        proxy_set_header Accept-Encoding "";
     }
     # === 404 Fallback cho SPA ===
     error_page 404 /index.html;
@@ -289,3 +276,13 @@ server {
 Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 <img width="3070" height="1743" alt="image" src="https://github.com/user-attachments/assets/b0968e2f-69a1-4b88-a584-fe1f91ad956f" />
 ### 4. TẠO FRONTEND & BACKEND
+1. Tạo database trên phpMyAdmin
+- Tạo các bảng trong db shop:
+
+<img width="3048" height="1736" alt="image" src="https://github.com/user-attachments/assets/7f6d7e35-18fc-4546-92d0-e65ee79990cf" />
+
+- Password được mã hóa: 
+
+<img width="3070" height="933" alt="image" src="https://github.com/user-attachments/assets/9652fa30-eb9c-4d10-b63c-cd21323aa5cc" />
+
+2. 
