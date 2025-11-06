@@ -276,7 +276,7 @@ server {
 Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 <img width="3070" height="1743" alt="image" src="https://github.com/user-attachments/assets/b0968e2f-69a1-4b88-a584-fe1f91ad956f" />
 ### 4. TẠO FRONTEND & BACKEND
-1. Tạo database trên phpMyAdmin
+#### 1. Tạo database trên phpMyAdmin
 - Tạo các bảng trong db shop:
 
 <img width="3048" height="1736" alt="image" src="https://github.com/user-attachments/assets/7f6d7e35-18fc-4546-92d0-e65ee79990cf" />
@@ -285,7 +285,7 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 
 <img width="3070" height="933" alt="image" src="https://github.com/user-attachments/assets/9652fa30-eb9c-4d10-b63c-cd21323aa5cc" />
 
-2. Tạo api backend qua NodeRed
+#### 2. Tạo api backend qua NodeRed
 - liệt kê các nhóm sản phẩm: `http://nguyentrunghieu.com/api/categories`
 
 <img width="1572" height="264" alt="image" src="https://github.com/user-attachments/assets/65b7a6f1-0039-41e6-a733-190a3e5ad5ef" />
@@ -320,4 +320,33 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 
 <img width="1996" height="580" alt="image" src="https://github.com/user-attachments/assets/e8a1c1c3-3bf2-4219-aad4-94a7f05d324b" />
 
-3. Xây dựng frontend.
+- xem tất cả đơn hàng (admin) : `http://nguyentrunghieu.com/api/admin/orders`
+  
+<img width="1940" height="152" alt="image" src="https://github.com/user-attachments/assets/f4e2d056-8dc2-496d-a670-314b62de6e58" />
+
+#### 3. Kết nối Grafana với DB để vẽ biểu đồ thống kê số lượng bán hàng trong từng ngày
+- Tạo Data Source trong Grafana: “Connections” → “Add new connection” → chọn MySQL.
+- Điền thông tin:
+```
+Host: mariadb:3306 
+Hoặc: localhost:3306   
+Database: shop
+User: hieu
+Password: 1234
+```
+- Nhấn: Save & Test : “Database connection OK”, là thành công.
+
+<img width="3043" height="1626" alt="image" src="https://github.com/user-attachments/assets/38e287f3-252a-4f20-81a3-9ed0ebfa2b49" />
+
+- Tạo dashboard biểu đồ sản phẩm bán mỗi ngày: Tạo panel mới → Visualization: Time series / Bar chart
+- Trong phần “Query”, chọn Data Source vừa tạo rồi dán SQL:
+```
+SELECT 
+  DATE(o.created_at) AS "time",
+  SUM(oi.quantity) AS "số lượng bán"
+FROM orders o
+JOIN order_items oi ON o.id = oi.order_id
+GROUP BY DATE(o.created_at)
+ORDER BY "time";
+```
+#### 4. Xây dựng frontend (index.html)
