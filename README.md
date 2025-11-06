@@ -288,32 +288,36 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 2. Tạo api backend qua NodeRed
 - liệt kê các nhóm sản phẩm: `http://nguyentrunghieu.com/api/categories`
 
-<img width="1458" height="263" alt="image" src="https://github.com/user-attachments/assets/4e445ca1-ba02-4f8d-9fad-b30a20fe64c9" />
+<img width="1572" height="264" alt="image" src="https://github.com/user-attachments/assets/65b7a6f1-0039-41e6-a733-190a3e5ad5ef" />
 
 - lấy danh sách sản phẩm lọc theo nhóm: `http://nguyentrunghieu.com/api/products?category_id=1`
 
-<img width="1464" height="142" alt="image" src="https://github.com/user-attachments/assets/0efd783a-d023-4bfc-9e0a-cdad4d237076" />
+<img width="1571" height="167" alt="image" src="https://github.com/user-attachments/assets/81ae84ae-7447-4458-b8e3-8d28eec32a22" />
+
 <img width="1293" height="1081" alt="image" src="https://github.com/user-attachments/assets/1a212cd3-5f98-4eb5-a698-fb0abb6803bd" />
 
 - tìm kiếm sản phẩm : `http://nguyentrunghieu.com/api/search?q=iphone`
-- 
-<img width="1392" height="169" alt="image" src="https://github.com/user-attachments/assets/253d59cb-e982-411d-a629-7ecf919ad89d" />
+
+<img width="1521" height="134" alt="image" src="https://github.com/user-attachments/assets/61bbdd0f-06cb-4357-bcd3-2db6123686d6" />
+
 <img width="1264" height="480" alt="image" src="https://github.com/user-attachments/assets/65afa3b6-d3cf-4cc3-8d44-8128f271a2a4" />
 
 - login + lưu session
  
-<img width="1991" height="212" alt="image" src="https://github.com/user-attachments/assets/610ba30e-1fb7-48d9-b6f6-68abec383474" />
+<img width="1995" height="136" alt="image" src="https://github.com/user-attachments/assets/a59d3b20-22ac-42c9-afb8-98ed4e362f41" />
 
 - liệt kê các sản phẩm bán chạy:`http://nguyentrunghieu.com/api/top-products`
 
-<img width="1519" height="187" alt="image" src="https://github.com/user-attachments/assets/2d30afdb-2fc1-4795-b339-01c6a565a80c" />
+<img width="1608" height="194" alt="image" src="https://github.com/user-attachments/assets/96f75771-6a15-40b5-bb16-12e0a663383e" />
 
 <img width="1142" height="1648" alt="image" src="https://github.com/user-attachments/assets/5b34673a-61d8-4025-aef1-12a30ceb9237" />
 
 - quản lý giỏ hàng
 
-<img width="1700" height="506" alt="image" src="https://github.com/user-attachments/assets/ca49ab48-6b45-4f07-be1f-d3ca0cb43f7a" />
+<img width="1599" height="507" alt="image" src="https://github.com/user-attachments/assets/86fb2580-40b0-4f07-8109-0e5ca3f5efd9" />
 
 - đặt hàng
+
+<img width="1996" height="580" alt="image" src="https://github.com/user-attachments/assets/e8a1c1c3-3bf2-4219-aad4-94a7f05d324b" />
 
 
