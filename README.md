@@ -302,7 +302,7 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 
 <img width="1264" height="480" alt="image" src="https://github.com/user-attachments/assets/65afa3b6-d3cf-4cc3-8d44-8128f271a2a4" />
 
-- login + lưu session
+- login + lưu session: `http://nguyentrunghieu.com/api/login`
  
 <img width="1995" height="136" alt="image" src="https://github.com/user-attachments/assets/a59d3b20-22ac-42c9-afb8-98ed4e362f41" />
 
@@ -312,12 +312,12 @@ Kết quả sau khi cấu hình nginx, domain `nguyentrunghieu.com`:
 
 <img width="1142" height="1648" alt="image" src="https://github.com/user-attachments/assets/5b34673a-61d8-4025-aef1-12a30ceb9237" />
 
-- quản lý giỏ hàng
+- quản lý giỏ hàng: `http://nguyentrunghieu.com/api/cart`
 
 <img width="1599" height="507" alt="image" src="https://github.com/user-attachments/assets/86fb2580-40b0-4f07-8109-0e5ca3f5efd9" />
 
-- đặt hàng
+- đặt hàng: `http://nguyentrunghieu.com/api/order`
 
 <img width="1996" height="580" alt="image" src="https://github.com/user-attachments/assets/e8a1c1c3-3bf2-4219-aad4-94a7f05d324b" />
 
-
+3. Xây dựng frontend.
