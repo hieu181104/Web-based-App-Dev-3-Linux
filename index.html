@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Shop - Nguyễn Trung Hiếu</title>
+<style>
+  :root{--accent:#2563eb;--muted:#666}
+  body{font-family:Inter,Arial,Helvetica,sans-serif;margin:0;background:#f4f6fb;color:#111}
+  header{background:linear-gradient(90deg,#fff 0,#eef4ff);padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0}
+  header h1{font-size:18px;margin:0;color:#0b1220}
+  .grow{flex:1}
+  .controls{display:flex;gap:8px;align-items:center}
+  input,button,select,textarea{font-family:inherit}
+  .search{padding:8px;border-radius:6px;border:1px solid #dfe7f4;width:300px}
+  button{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+  button.secondary{background:#e6eefc;color:#0b1220}
+  main{padding:18px;display:flex;gap:18px}
+  nav#cats{width:220px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 12px rgba(20,30,60,0.06)}
+  nav#cats button{display:block;width:100%;text-align:left;padding:8px;border:none;background:transparent;border-radius:6px;cursor:pointer}
+  section#content{flex:1;background:transparent}
+  .grid{display:flex;flex-wrap:wrap;gap:12px}
+  .card{background:#fff;border-radius:8px;padding:12px;width:220px;box-shadow:0 6px 12px rgba(20,30,60,0.06)}
+  .card h4{margin:0 0 8px 0;font-size:16px}
+  .price{font-weight:700;color:#0b1220;margin-top:6px}
+  .btn-add{background:#0ea5a3}
+  #cartBox{position:fixed;right:18px;bottom:18px;background:#fff;border-radius:8px;padding:12px;box-shadow:0 10px 30px rgba(20,30,60,0.08)}
+  /* modal */
+  .modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:18px;border-radius:8px;box-shadow:0 20px 50px rgba(10,20,40,0.15);z-index:200;min-width:320px}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:190}
+  .hidden{display:none}
+  footer{padding:12px;text-align:center;color:var(--muted);font-size:13px}
+  .admin{background:#fff;padding:12px;border-radius:8px;}
+  table{width:100%;border-collapse:collapse}
+  table th,table td{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
+</style>
+</head>
+<body>
+<header>
+  <h1>Shop Nguyễn Trung Hiếu</h1>
+  <div class="grow"></div>
+  <input id="searchInput" class="search" placeholder="Tìm sản phẩm..." />
+  <div class="controls">
+    <button id="btnSearch" class="secondary">Tìm</button>
+    <button id="btnTop" class="secondary">Bán chạy</button>
+    <button id="btnLogin">Login</button>
+    <button id="btnLogout" class="hidden">Logout</button>
+    <button id="btnCart">Giỏ (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+
+<main>
+  <nav id="cats"><h3>Danh mục</h3><div id="catsList">Đang tải...</div></nav>
+  <section id="content">
+    <div id="message"></div>
+    <div id="home">
+      <h3>Gợi ý cho bạn</h3>
+      <div id="topProducts" class="grid"></div>
+      <h3>Sản phẩm</h3>
+      <div id="products" class="grid"></div>
+    </div>
+
+    <div id="adminPanel" class="hidden admin">
+      <h3>Admin - Orders</h3>
+      <div id="adminOrders">Loading...</div>
+    </div>
+  </section>
+</main>
+
+<div id="cartBox">
+  <strong>Giỏ hàng</strong>
+  <div id="cartSummary">0 sản phẩm</div>
+  <div style="margin-top:8px">
+    <button id="openCart">Mở giỏ</button>
+  </div>
+</div>
+
+<footer>© Nguyễn Trung Hiếu - Demo SPA</footer>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal hidden">
+  <h3>Đăng nhập</h3>
+  <div>
+    <input id="loginUser" placeholder="Tên đăng nhập hoặc email" style="width:100%;padding:8px;margin:6px 0" />
+    <input id="loginPass" placeholder="Mật khẩu" type="password" style="width:100%;padding:8px;margin:6px 0" />
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="doLogin">Đăng nhập</button>
+      <button id="closeLogin">Đóng</button>
+    </div>
+    <div id="loginMsg" style="color:#c00;margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal hidden" style="min-width:480px;max-width:90vw">
+  <h3>Giỏ hàng</h3>
+  <div id="cartItems"></div>
+  <div style="margin-top:8px">Tổng: <strong id="cartTotal">0</strong> ₫</div>
+  <h4>Thông tin giao hàng</h4>
+  <input id="shipFullname" placeholder="Họ tên" style="width:100%;padding:8px;margin:6px 0" />
+  <input id="shipPhone" placeholder="Số điện thoại" style="width:100%;padding:8px;margin:6px 0" />
+  <textarea id="shipAddress" placeholder="Địa chỉ nhận hàng" style="width:100%;padding:8px;margin:6px 0"></textarea>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button id="placeOrder">Đặt hàng</button>
+    <button id="closeCartBtn">Đóng</button>
+  </div>
+  <div id="orderMsg" style="margin-top:8px"></div>
+</div>
+
+<div id="overlay" class="overlay hidden"></div>
+
+<script>
+const API_ROOT = '/api';
+function api(path, opts={}) {
+  opts.credentials = 'include';
+  opts.headers = opts.headers || {};
+  if(opts.body && typeof opts.body === 'object') {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  return fetch(API_ROOT + path, opts).then(r => {
+    if(!r.ok) return r.json().then(j=>{ throw {status:r.status, body:j}; }).catch(()=>{ throw {status:r.status, body:null}; });
+    return r.json().catch(()=>null);
+  });
+}
+function qs(sel){return document.querySelector(sel);}
+function money(v){return new Intl.NumberFormat('vi-VN').format(Number(v));}
+
+/* ---------- state ---------- */
+let state = {
+  user: JSON.parse(localStorage.getItem('user')||'null'),
+  cart: [],
+  categories: []
+};
+
+/* ---------- CART (server-based) ---------- */
+async function loadCartFromServer(){
+  try{
+    const res = await api('/cart');
+    const items = res.cart || res || [];
+    state.cart = items.map(i => ({
+      id: i.product_id || i.id,
+      qty: i.quantity || i.qty || 1,
+      name: i.product_name || (i.product && i.product.name) || '',
+      price: i.price || (i.product && i.product.price) || 0,
+      cart_id: i.id_cart || i.cart_id || i.id // dùng để PUT/DELETE
+    }));
+    renderCartCount();
+  }catch(e){
+    console.warn('cart load failed', e);
+    state.cart = [];
+    renderCartCount();
+  }
+}
+async function addToCart(product_id, qty=1, product=null){
+  try{
+    await api('/cart', { method:'POST', body:{ product_id, quantity: qty }});
+    showMessage('Đã thêm vào giỏ');
+    await loadCartFromServer();
+  }catch(e){ console.error('addToCart', e); showMessage('Lỗi khi thêm vào giỏ'); }
+}
+async function updateCartItem(cart_id, newQty){
+  try{
+    await api(`/cart/${cart_id}`, { method:'PUT', body:{ quantity: newQty }});
+    await loadCartFromServer();
+  }catch(e){ console.error('updateCart', e); }
+}
+async function removeCartItem(cart_id){
+  try{
+    await api(`/cart/${cart_id}`, { method:'DELETE' });
+    await loadCartFromServer();
+  }catch(e){ console.error('removeCart', e); }
+}
+function renderCartCount(){
+  const count = state.cart.reduce((s,i)=>s+i.qty,0);
+  qs('#cartCount').innerText = count;
+  qs('#cartSummary').innerText = count + ' sản phẩm';
+}
+function openCart(){
+  renderCartModal();
+  qs('#cartModal').classList.remove('hidden');
+  showOverlay(true);
+}
+function closeCart(){ qs('#cartModal').classList.add('hidden'); showOverlay(false); }
+
+function renderCartModal(){
+  const ctn = qs('#cartItems'); ctn.innerHTML='';
+  if(state.cart.length===0){ ctn.innerHTML = '<div>Giỏ hàng trống</div>'; qs('#cartTotal').innerText='0'; return; }
+  let total=0;
+  state.cart.forEach(ci=>{
+    const row = document.createElement('div');
+    row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center';
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>${ci.name || ('SP#'+ci.id)}</strong><div>${money(ci.price)} ₫</div>`;
+    const right = document.createElement('div');
+    right.innerHTML = `<input type="number" min="1" value="${ci.qty}" style="width:60px;padding:6px" /> <button>Xóa</button>`;
+    right.querySelector('input').addEventListener('change', (ev)=>{
+      const v = parseInt(ev.target.value)||1;
+      updateCartItem(ci.cart_id, v);
+    });
+    right.querySelector('button').addEventListener('click', ()=>removeCartItem(ci.cart_id));
+    row.appendChild(left); row.appendChild(right);
+    ctn.appendChild(row);
+    total += ci.price * ci.qty;
+  });
+  qs('#cartTotal').innerText = money(total);
+}
+
+/* ---------- ORDER ---------- */
+async function placeOrder(){
+  if(state.cart.length===0){ alert('Giỏ trống'); return; }
+  const fullname = qs('#shipFullname').value.trim();
+  const phone = qs('#shipPhone').value.trim();
+  const address = qs('#shipAddress').value.trim();
+  if(!fullname||!phone||!address){ alert('Nhập thông tin giao hàng'); return; }
+
+  const total = state.cart.reduce((s,it)=>s + (it.price||0)*it.qty, 0);
+  try{
+    const payload = { fullname, phone, shipping_address: address, total_price: total };
+    const res = await api('/order', { method:'POST', body: payload });
+    if(res && (res.ok || res.success)){
+      showMessage('Đặt hàng thành công');
+      qs('#orderMsg').innerText='Đặt hàng thành công!';
+      await loadCartFromServer(); // clear server-side cart
+      renderCartModal();
+    } else qs('#orderMsg').innerText='Lỗi: '+JSON.stringify(res);
+  }catch(e){ console.error('order', e); qs('#orderMsg').innerText='Lỗi khi đặt hàng'; }
+}
+
+/* ---------- LOGIN ---------- */
+function openLogin(){ qs('#loginModal').classList.remove('hidden'); showOverlay(true); }
+function closeLogin(){ qs('#loginModal').classList.add('hidden'); showOverlay(false); qs('#loginMsg').innerText=''; }
+async function doLogin(){
+  const username = qs('#loginUser').value.trim();
+  const password = qs('#loginPass').value;
+  if(!username||!password){qs('#loginMsg').innerText='Nhập đầy đủ';return;}
+  try{
+    const res = await api('/login',{method:'POST',body:{username,password}});
+    state.user = res.user || res; localStorage.setItem('user',JSON.stringify(state.user));
+    closeLogin(); renderAuth(); showMessage('Đăng nhập thành công');
+    await loadCartFromServer();
+    if(state.user.role==='admin') showAdminPanel();
+  }catch(e){ qs('#loginMsg').innerText='Đăng nhập lỗi'; }
+}
+function logout(){
+  fetch(API_ROOT+'/logout',{method:'POST',credentials:'include'}).finally(()=>{
+    state.user=null; localStorage.removeItem('user'); renderAuth(); state.cart=[]; renderCartCount();
+  });
+}
+
+/* ---------- ADMIN ---------- */
+async function showAdminPanel(){
+  qs('#adminPanel').classList.remove('hidden');
+  try{
+    const res = await api('/admin/orders');
+    const orders = res.orders || res;
+    const ctn = qs('#adminOrders'); ctn.innerHTML='';
+    if(!orders || orders.length===0){ ctn.innerText='Không có đơn'; return; }
+    const table=document.createElement('table');
+    table.innerHTML='<thead><tr><th>ID</th><th>Khách</th><th>Tổng</th><th>Trạng thái</th><th></th></tr></thead>';
+    const tb=document.createElement('tbody');
+    orders.forEach(o=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${o.id}</td><td>${o.fullname||o.customer||''}</td><td>${money(o.total_price||0)}</td>
+      <td>${o.status||''}</td>
+      <td><select data-id="${o.id}">
+          <option>pending</option><option>confirmed</option><option>shipped</option><option>completed</option>
+          <option>cancelled</option></select>
+          <button data-id="${o.id}" class="updBtn">Lưu</button></td>`;
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb); ctn.appendChild(table);
+    ctn.querySelectorAll('.updBtn').forEach(btn=>{
+      btn.addEventListener('click',async(ev)=>{
+        const id=ev.target.dataset.id;
+        const status=ctn.querySelector(`select[data-id="${id}"]`).value;
+        await api('/admin/orders/'+id,{method:'PUT',body:{status}});
+        showMessage('Cập nhật thành công');
+      });
+    });
+  }catch(e){ console.error('admin',e); }
+}
+
+/* ---------- UI ---------- */
+function renderAuth(){
+  if(state.user){qs('#btnLogin').classList.add('hidden');qs('#btnLogout').classList.remove('hidden');}
+  else {qs('#btnLogin').classList.remove('hidden');qs('#btnLogout').classList.add('hidden');qs('#adminPanel').classList.add('hidden');}
+}
+function showMessage(msg,time=3000){const m=qs('#message');m.innerText=msg;setTimeout(()=>{if(m.innerText===msg)m.innerText='';},time);}
+function showOverlay(show){qs('#overlay').classList.toggle('hidden',!show);}
+
+/* ---------- CATEGORY & PRODUCTS ---------- */
+async function loadCategories(){
+  try{
+    const res=await api('/categories');
+    const cats=Array.isArray(res)?res:(res.data||res.categories||[]);
+    state.categories=cats;
+    const ctn=qs('#catsList');ctn.innerHTML='';
+    const all=document.createElement('button');all.textContent='Tất cả';all.onclick=()=>loadProducts();ctn.appendChild(all);
+    cats.forEach(c=>{
+      const b=document.createElement('button');
+      b.textContent=c.name;b.onclick=()=>loadProducts(`?category_id=${c.id}`);ctn.appendChild(b);
+    });
+  }catch(e){qs('#catsList').innerText='Lỗi';}
+}
+async function loadTopProducts(){
+  try{
+    const res=await api('/top-products');
+    const list=res.products||res||[];
+    const box=qs('#topProducts');box.innerHTML='';
+    list.forEach(p=>box.appendChild(renderProductCard(p)));
+  }catch(e){qs('#topProducts').innerText='Lỗi';}
+}
+async function loadProducts(q=''){
+  const box=qs('#products');box.innerHTML='<div>Đang tải...</div>';
+  try{
+    const res=await api('/products'+(q||''));
+    const list=res.products||res||[];
+    box.innerHTML='';
+    list.forEach(p=>box.appendChild(renderProductCard(p)));
+  }catch(e){box.innerText='Lỗi tải';}
+}
+function renderProductCard(p){
+  const el=document.createElement('div');el.className='card';
+  el.innerHTML=`<h4>${p.name}</h4><div>${p.description||''}</div><div class="price">${money(p.price)} ₫</div>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn-add">Thêm</button></div>`;
+  el.querySelector('.btn-add').addEventListener('click',()=>addToCart(p.id,1,p));
+  return el;
+}
+
+/* ---------- EVENT BIND ---------- */
+qs('#btnLogin').addEventListener('click',openLogin);
+qs('#closeLogin').addEventListener('click',closeLogin);
+qs('#doLogin').addEventListener('click',doLogin);
+qs('#btnLogout').addEventListener('click',logout);
+qs('#btnCart').addEventListener('click',openCart);
+qs('#openCart').addEventListener('click',openCart);
+qs('#closeCartBtn').addEventListener('click',closeCart);
+qs('#placeOrder').addEventListener('click',placeOrder);
+qs('#btnSearch').addEventListener('click',()=>{const q=qs('#searchInput').value.trim();if(q)loadProducts('?q='+encodeURIComponent(q));else loadProducts();});
+qs('#searchInput').addEventListener('keypress',e=>{if(e.key==='Enter')qs('#btnSearch').click();});
+qs('#btnTop').addEventListener('click',loadTopProducts);
+
+/* ---------- INIT ---------- */
+(async function init(){
+  renderAuth();
+  await loadCategories();
+  await loadTopProducts();
+  await loadProducts();
+  if(state.user) await loadCartFromServer();
+})();
+</script>
+</body>
+</html>
